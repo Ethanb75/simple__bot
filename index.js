@@ -29,9 +29,10 @@ setInterval(function() {
   var time = new Date();
   client.get('followers/ids', { screen_name: 'EthanBellora' },  function (err, data, response) {
     console.log(data.ids.length);
+    //TODO trim back of string before posting
     client.post('statuses/update', {status: `date: ${time.toString()} \n followers: ${data.ids.length}`})
   })
-}, 1000 * 60 * 5);
+}, 1000 * 60 * 30);
 
 // userStream.on('unfollow', function(msg) {
 //   console.log(msg);
