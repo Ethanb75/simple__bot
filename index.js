@@ -1,13 +1,14 @@
 var Twit = require('twit');
-var config = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-}
+// var config = {
+//   consumer_key: process.env.CONSUMER_KEY,
+//   consumer_secret: process.env.CONSUMER_SECRET,
+//   access_token: process.env.ACCESS_TOKEN,
+//   access_token_secret: process.env.ACCESS_TOKEN_SECRET
+// }
+var config = require('./config');
 var client = new Twit(config);
 
-
+// process.env.NODE_ENV=production
 //also can do track: ['bananas', 'oranges', 'strawberries']
 // var stream = client.stream('statuses/filter', {track: 'Development'});
 var userStream = client.stream('user');
@@ -23,6 +24,14 @@ userStream.on('follow', function(msg) {
     console.log(data)
   })
 })
+
+setInterval(function() {
+  var time = new Date();
+  client.get('followers/ids', { screen_name: 'EthanBellora' },  function (err, data, response) {
+    console.log(data.ids.length);
+    client.post('statuses/update', {status: `date: ${time.toString()} \n followers: ${data.ids.length}`})
+  })
+}, 1000 * 60 * 5);
 
 // userStream.on('unfollow', function(msg) {
 //   console.log(msg);
