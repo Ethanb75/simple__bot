@@ -7,6 +7,7 @@ var config = {
 }
 // var config = require('./config');
 var client = new Twit(config);
+var oldFollowers = 0;
 
 // process.env.NODE_ENV=production
 //also can do track: ['bananas', 'oranges', 'strawberries']
@@ -18,21 +19,32 @@ var userStream = client.stream('user');
 //  console.log(tweet.text)
 // });
 
-userStream.on('follow', function(msg) {
-  console.log(msg.source.screen_name);
-  client.post('statuses/update', { status: `Thanks for the follow ${msg.source.screen_name}` }, function(err, data, response) {
-    console.log(data)
-  })
-})
+// userStream.on('follow', function(msg) {
+//   console.log(msg.source.screen_name);
+//   client.post('statuses/update', { status: `Thanks for the follow ${msg.source.screen_name}` }, function(err, data, response) {
+//     console.log(data)
+//   })
+// })
 
+
+
+/* Sends a messsage every 12 hours */
 setInterval(function() {
   var time = new Date();
-  client.get('followers/ids', { screen_name: 'EthanBellora' },  function (err, data, response) {
-    console.log(data.ids.length);
+  client.get('followers/ids', { screen_name: 'CeejayBarber' },  function (err, data, response) {
     //TODO trim back of string before posting
-    client.post('statuses/update', {status: `date: ${time.toString()} \n followers: ${data.ids.length}`})
+
+    client.post('direct_messages/new', {user: 'CeejayBarber', text: `${time.toString()} \nCurrent followers: ${data.ids.length}\nDifference: ${data.ids.length - oldFollowers}`}, function() {
+      oldFollowers = data.ids.length;
+    })
   })
-}, 1000 * 60 * 30);
+}, 1000 * 60 * 60 * 12);
+
+
+
+
+
+
 
 // userStream.on('unfollow', function(msg) {
 //   console.log(msg);
