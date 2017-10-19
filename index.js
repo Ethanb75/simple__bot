@@ -1,11 +1,11 @@
 var Twit = require('twit');
-var config = {
-  consumer_key: process.env.CONSUMER_KEY,
-  consumer_secret: process.env.CONSUMER_SECRET,
-  access_token: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-}
-// var config = require('./config');
+// var config = {
+//   consumer_key: process.env.CONSUMER_KEY,
+//   consumer_secret: process.env.CONSUMER_SECRET,
+//   access_token: process.env.ACCESS_TOKEN,
+//   access_token_secret: process.env.ACCESS_TOKEN_SECRET
+// }
+var config = require('./config');
 var client = new Twit(config);
 var oldFollowers = 0;
 
@@ -26,15 +26,15 @@ var userStream = client.stream('user');
 //   })
 // })
 
-
-
 /* Sends a messsage every 12 hours */
 setInterval(function() {
   var time = new Date();
   client.get('followers/ids', { screen_name: 'CeejayBarber' },  function (err, data, response) {
     //TODO trim back of string before posting
-
-    client.post('direct_messages/new', {user: 'CeejayBarber', text: `${time.toString()} \nCurrent followers: ${data.ids.length}\nDifference: ${data.ids.length - oldFollowers}`}, function() {
+    if (err) console.log(err);
+    console.log(data.ids.length);
+    client.post('direct_messages/new', {user: 'CeejayBarber', text: `${time.toString()} \nCurrent followers: ${data.ids.length}\nDifference: ${data.ids.length - oldFollowers}`}, function(err) {
+      if (err) console.log(err);
       oldFollowers = data.ids.length;
     })
   })
